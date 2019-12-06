@@ -69,14 +69,11 @@ func DBSource() string {
 	i := 0
 	var user string
 	var pass string
-	var ip string
 	for scanner.Scan() {
 		if i == 0 {
 			user = scanner.Text()
 		} else if i == 1 {
 			pass = scanner.Text()
-		} else if i == 2 {
-			ip = scanner.Text()
 		}
 		i++
 	}
@@ -85,7 +82,7 @@ func DBSource() string {
 		log.Fatal(err)
 	}
 
-	output := user + ":" + pass + "@tcp(" + ip + ")/esp"
+	output := user + ":" + pass + "@/esp"
 
 	return output
 }
