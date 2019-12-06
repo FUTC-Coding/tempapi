@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	_ "github.com/go-sql-driver/mysql"
+	"strings"
 )
 
 var temp float32
@@ -27,9 +28,14 @@ func handleRequests() {
 
 func writeToDB (w http.ResponseWriter, r *http.Request) {
 	reqBody,_ := ioutil.ReadAll(r.Body)
-	temp, err := strconv.ParseFloat(string(reqBody),32)
+	data := strings.Split(string(reqBody), ",")
+	temp, err := strconv.ParseFloat(data[0],32)
 	if err != nil {
-		log.Fatal("something other than a float was passed")
+		log.Fatal("something other than a float was passed for temp")
+	}
+	humidity, err := strconv.ParseFloat(data[1],32)
+	if err != nil {
+		log.Fatal("something other than a float was passed for humidity")
 	}
 
 	db, err := sql.Open("mysql", DBSource())
@@ -45,7 +51,7 @@ func writeToDB (w http.ResponseWriter, r *http.Request) {
 		fmt.Println("DB connection working")
 	}
 
-	stmt, err := db.Prepare("INSERT INTO temp VALUES (" + strconv.FormatFloat(temp, 'f', 6, 32) + ", CURRENT_TIMESTAMP)")
+	stmt, err := db.Prepare("INSERT INTO temp VALUES (" + strconv.FormatFloat(temp, 'f', 6, 32) + "," + strconv.FormatFloat(humidity, 'f', 6, 32) + ", CURRENT_TIMESTAMP)")
 	if err != nil {
 		log.Fatal(err)
 	}
